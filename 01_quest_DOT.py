@@ -1,4 +1,4 @@
-""#faça uma funçao que recebe um número interiro por parametro e return verdadeiro se ele for par e falso se for impar."
+#faça uma funçao que recebe um número interiro por parametro e return verdadeiro se ele for par e falso se for impar."
 
 
 
@@ -12,7 +12,7 @@ while True:
     try:
          num = int(input("Digite um numero: "))
          if par_impar(num) == True:
-            print("\nO número %d é par." % num)
+            print("\nO número %d é PAR." % num)
          else:
              print("\nO número %d é impar." % num)
          break
