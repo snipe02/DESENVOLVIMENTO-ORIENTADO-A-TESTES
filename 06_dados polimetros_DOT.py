@@ -1,3 +1,7 @@
+Escreva um programa para ler o numero
+
+
+
 lados = int(input())
 centimetro = float(input())
 
