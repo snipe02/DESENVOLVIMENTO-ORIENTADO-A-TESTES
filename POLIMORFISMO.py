@@ -1,0 +1,170 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNruJ3FankkkOinoh4jWrbg",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/snipe02/DESENVOLVIMENTO-ORIENTADO-A-TESTES/blob/master/POLIMORFISMO.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 25,
+      "metadata": {
+        "id": "NSOp2A837mjR",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "4d8a521f-7285-445f-9375-5681813b9641"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saque efetuado com sucesso\n",
+            "Saque efetuado com sucesso\n",
+            "Saque efetuado com sucesso\n",
+            "Saque efetuado com sucesso\n",
+            "Saque efetuado com cobrança extra de 0,50 centavos\n",
+            "4999.5\n"
+          ]
+        }
+      ],
+      "source": [
+        "class ContaCorrente:\n",
+        "    def __init__(self, numero, saldo=0):\n",
+        "        self._numero = numero\n",
+        "        self._saldo = saldo\n",
+        "\n",
+        "    \n",
+        "    @property\n",
+        "    def saldo(self):\n",
+        "        return self._saldo\n",
+        "    \n",
+        "    @property\n",
+        "    def numero(self):\n",
+        "      return self._numero\n",
+        "\n",
+        "    def sacar(self, valor):\n",
+        "      self._saldo -= valor+2\n",
+        "      print('O valor foi debitado')\n",
+        "\n",
+        "    def creditar(self, valor):\n",
+        "        self._saldo += valor\n",
+        "        print('O crédito foi efetuado')\n",
+        "\n",
+        "  \n",
+        "    def debitar(self, valor):\n",
+        "        if valor < self._saldo:\n",
+        "            self._saldo -= valor\n",
+        "            print('O valor foi debitado')\n",
+        "        else:\n",
+        "            print('Não é possível debitar um valor menor do que o saldo existente')\n",
+        "\n",
+        "\n",
+        "    def transferir(self, valor, conta):\n",
+        "        if self._saldo >= valor:\n",
+        "            self._saldo -= valor\n",
+        "            conta._saldo += valor\n",
+        "            print(f'Valor transferido com sucesso. Você agora tem R${self._saldo}')\n",
+        "            print(f'A conta que foi efetuada o saque, agora possui R${conta._saldo}')\n",
+        "        else:\n",
+        "            print('Você não tem saldo suficiente')\n",
+        "  \n",
+        "    def __str__(self):\n",
+        "        return 'CONTA ==> '+ str(self._numero) + f' // saldo: R${self._saldo},00'\n",
+        "\n",
+        "#Na classe ContaPoupança que é filha de ContaCorrente, reescreva o método sacar(self,valor). Este método cobra R$ 0,50 para\n",
+        "# cada saque efetuado a partir do 5º saque. Ou seja, Toda instancia de ContaPoupanca pode efetuar 4 saques sem cobrança de tarifa. \n",
+        "#A partir do 5º saque, é debitado o valor do saque mais R$ 0,50. \n",
+        "\n",
+        "class ContaPoupanca(ContaCorrente):\n",
+        "  def __init__(self, numero, tx_juros, saldo=0):\n",
+        "    super().__init__(numero, saldo)\n",
+        "    self._tx_juros = tx_juros\n",
+        "    self._saques = 0\n",
+        "  \n",
+        "  @property\n",
+        "  def saques(self):\n",
+        "    return self._saques\n",
+        "\n",
+        "  @property\n",
+        "  def tx_juros(self):\n",
+        "    return self._tx_juros\n",
+        "  \n",
+        "  def sacar(self, valor):\n",
+        "    self._saques += 1\n",
+        "    if self._saques > 4:\n",
+        "      self._saldo -= valor+0.50\n",
+        "      print('Saque efetuado com cobrança extra de 0,50 centavos')\n",
+        "    else:\n",
+        "      self._saldo -= valor\n",
+        "      print('Saque efetuado com sucesso')\n",
+        "      \n",
+        "\n",
+        "\n",
+        "  def render_juros(self):\n",
+        "    if self._saldo != 0:\n",
+        "      self._saldo += ((self._tx_juros/100)*self._saldo)\n",
+        "      print(f'O juros rendeu. Seu saldo agora é R${self._saldo},00')\n",
+        "    else:\n",
+        "      print('Impossível fazer o seu dinheiro render, invista primeiro!')\n",
+        "\n",
+        "  def __str__(self):\n",
+        "    return super().__str__()+ f' // tx juros:{self._tx_juros}%' #AQUI COM O super(). CHAMO O __str__() da classe ContaCorrente\n",
+        "\n",
+        "\n",
+        "class ContaImposto(ContaCorrente):\n",
+        "  def __init__(self, numero, percentual_imposto, saldo=0):\n",
+        "    super().__init__(numero, saldo)\n",
+        "    self._percentual_imposto = percentual_imposto\n",
+        "  \n",
+        "  @property\n",
+        "  def percentual_imposto(self):\n",
+        "    return self._percentual_imposto\n",
+        "  \n",
+        "  \n",
+        "  def calcula_imposto(self):\n",
+        "    self._saldo -= self._saldo*(self._percentual_imposto/100)\n",
+        "    print(f'O valor do atual do saldo é {self._saldo}')\n",
+        "\n",
+        "  def __str__(self):\n",
+        "    return super().__str__()+  '\\n' f'O seu percentual de desconto foi de {self._percentual_imposto}%'\n",
+        "\n",
+        "\n",
+        "contalucas = ContaCorrente('01', 5000)\n",
+        "\n",
+        "contakleber = ContaPoupanca('02', 5, 10000)\n",
+        "\n",
+        "contakleber.sacar(1000)\n",
+        "\n",
+        "\n",
+        "contakleber.sacar(1000)\n",
+        "contakleber.sacar(1000)\n",
+        "contakleber.sacar(1000)\n",
+        "contakleber.sacar(1000)\n",
+        "print(contakleber.saldo)\n"
+      ]
+    }
+  ]
+}
